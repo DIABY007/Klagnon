@@ -1,4 +1,0 @@
-interface:
-  display_name: "Next.js PWA Service Worker"
-  short_description: "Build and troubleshoot service workers for Next.js App Router PWAs"
-  default_prompt: "Implement or fix a Next.js App Router PWA with app/manifest.ts, public/sw.js, safe service worker updates, and optional push notifications via Server Actions."

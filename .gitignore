@@ -10,6 +10,11 @@
 !.yarn/releases
 !.yarn/versions
 
+# Claude development files
+.claude/
+.agents/
+AGENTS.md
+
 # testing
 /coverage
 

@@ -1,4 +1,0 @@
-name: Next.js PWA Service Worker
-provider: anthropic
-description: Specialist agent for Next.js App Router PWAs, service workers, offline caching, and push notifications.
-system_prompt_file: claude.md
