@@ -2,7 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { LogOut, Sprout, Package, ShoppingCart, TrendingUp, Wallet } from "lucide-react";
+import { LogOut, Sprout, Package, ShoppingCart, TrendingUp, Wallet, Users } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -58,6 +58,14 @@ export default async function DashboardPage() {
       href: "/dashboard/tresorerie",
       color: "text-primary",
       bgColor: "bg-primary/10",
+    },
+    {
+      title: "Partenaires",
+      description: "Fournisseurs et clients",
+      icon: Users,
+      href: "/dashboard/partenaires",
+      color: "text-accent-foreground",
+      bgColor: "bg-accent/10",
     },
   ];
 

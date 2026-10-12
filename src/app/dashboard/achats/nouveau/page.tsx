@@ -24,7 +24,16 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Loader2, Plus, Trash2, ArrowLeft, Sprout } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Loader2, Plus, Trash2, ArrowLeft, Sprout, CirclePlus } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 
@@ -77,6 +86,12 @@ export default function NouvelAchatPage() {
   const [initialLoading, setInitialLoading] = useState(true);
   const router = useRouter();
   const supabase = createClient();
+
+  /* Quick-create fournisseur */
+  const [quickOpen, setQuickOpen] = useState(false);
+  const [quickNom, setQuickNom] = useState("");
+  const [quickContact, setQuickContact] = useState("");
+  const [quickLoading, setQuickLoading] = useState(false);
 
   const {
     register,
@@ -220,22 +235,98 @@ export default function NouvelAchatPage() {
                 <Label htmlFor="fournisseur_id">
                   Fournisseur <span className="text-destructive">*</span>
                 </Label>
-                <Select
-                  onValueChange={(val: string | null) => val && setValue("fournisseur_id", val, { shouldValidate: true })}
-                >
-                  <SelectTrigger
-                    className={errors.fournisseur_id ? "border-destructive" : ""}
+                <div className="flex gap-2">
+                  <Select
+                    onValueChange={(val: string | null) => val && setValue("fournisseur_id", val, { shouldValidate: true })}
                   >
-                    <SelectValue placeholder="Sélectionner un fournisseur" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {fournisseurs.map((f) => (
-                      <SelectItem key={f.id} value={f.id}>
-                        {f.nom}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                    <SelectTrigger
+                      className={errors.fournisseur_id ? "border-destructive" : ""}
+                    >
+                      <SelectValue placeholder="Sélectionner un fournisseur" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {fournisseurs.map((f) => (
+                        <SelectItem key={f.id} value={f.id}>
+                          {f.nom}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Dialog
+                    open={quickOpen}
+                    onOpenChange={(o) => {
+                      if (!o) { setQuickOpen(false); setQuickNom(""); setQuickContact(""); }
+                      setQuickOpen(o);
+                    }}
+                  >
+                    <DialogTrigger>
+                      <Button variant="outline" size="icon" className="shrink-0" title="Ajouter un fournisseur">
+                        <CirclePlus className="h-4 w-4" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[400px]">
+                      <DialogHeader>
+                        <DialogTitle>Nouveau fournisseur</DialogTitle>
+                        <DialogDescription>
+                          Ajouter rapidement un fournisseur
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="grid gap-3 py-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="quick-nom">
+                            Nom <span className="text-destructive">*</span>
+                          </Label>
+                          <Input
+                            id="quick-nom"
+                            type="text"
+                            value={quickNom}
+                            onChange={(e) => setQuickNom(e.target.value)}
+                            placeholder="Nom du fournisseur"
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="quick-contact">Contact</Label>
+                          <Input
+                            id="quick-contact"
+                            type="text"
+                            value={quickContact}
+                            onChange={(e) => setQuickContact(e.target.value)}
+                            placeholder="Téléphone ou email"
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => { setQuickOpen(false); setQuickNom(""); setQuickContact(""); }}>
+                          Annuler
+                        </Button>
+                        <Button
+                          onClick={async () => {
+                            if (!quickNom.trim()) { toast.error("Le nom est requis"); return; }
+                            setQuickLoading(true);
+                            const { data, error } = await supabase.from("Tiers").insert({
+                              nom: quickNom.trim(),
+                              type: "Fournisseur",
+                              contact: quickContact.trim() || null,
+                            }).select("id, nom").single();
+                            setQuickLoading(false);
+                            if (error) { toast.error(error.message); return; }
+                            if (data) {
+                              setFournisseurs((prev) => [...prev, data as Fournisseur].sort((a, b) => a.nom.localeCompare(b.nom)));
+                              setValue("fournisseur_id", data.id, { shouldValidate: true });
+                              toast.success(`Fournisseur « ${quickNom.trim()} » ajouté`);
+                            }
+                            setQuickOpen(false);
+                            setQuickNom("");
+                            setQuickContact("");
+                          }}
+                          disabled={quickLoading}
+                        >
+                          {quickLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Ajout...</> : "Ajouter"}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
                 {errors.fournisseur_id && (
                   <p className="text-sm text-destructive">{errors.fournisseur_id.message}</p>
                 )}

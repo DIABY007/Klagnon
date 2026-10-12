@@ -25,11 +25,21 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Loader2,
   ArrowLeft,
   TrendingUp,
   Warehouse,
   AlertCircle,
+  CirclePlus,
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -61,6 +71,12 @@ export default function NouvelleVentePage() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [stockError, setStockError] = useState<string | null>(null);
+
+  /* Quick-create client */
+  const [quickClientOpen, setQuickClientOpen] = useState(false);
+  const [quickClientNom, setQuickClientNom] = useState("");
+  const [quickClientContact, setQuickClientContact] = useState("");
+  const [quickLoading, setQuickLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
 
@@ -246,27 +262,102 @@ export default function NouvelleVentePage() {
                 <Label htmlFor="client_id">
                   Client <span className="text-destructive">*</span>
                 </Label>
-                <Select
-                  onValueChange={(val: string | null) =>
-                    val &&
-                    setValue("client_id", val, { shouldValidate: true })
-                  }
-                >
-                  <SelectTrigger
-                    id="client_id"
-                    className={errors.client_id ? "border-destructive" : ""}
+                <div className="flex gap-2">
+                  <Select
+                    onValueChange={(val: string | null) =>
+                      val && setValue("client_id", val, { shouldValidate: true })
+                    }
                   >
-                    <SelectValue placeholder="Sélectionner un client" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {clients.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>
-                        {c.nom}
-                        {c.contact ? ` — ${c.contact}` : ""}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                    <SelectTrigger
+                      id="client_id"
+                      className={errors.client_id ? "border-destructive" : ""}
+                    >
+                      <SelectValue placeholder="Sélectionner un client" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {clients.map((c) => (
+                        <SelectItem key={c.id} value={c.id}>
+                          {c.nom}
+                          {c.contact ? ` — ${c.contact}` : ""}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Dialog
+                    open={quickClientOpen}
+                    onOpenChange={(o) => {
+                      if (!o) { setQuickClientOpen(false); setQuickClientNom(""); setQuickClientContact(""); }
+                      setQuickClientOpen(o);
+                    }}
+                  >
+                    <DialogTrigger>
+                      <Button variant="outline" size="icon" className="shrink-0" title="Ajouter un client">
+                        <CirclePlus className="h-4 w-4" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[400px]">
+                      <DialogHeader>
+                        <DialogTitle>Nouveau client</DialogTitle>
+                        <DialogDescription>
+                          Ajouter rapidement un client
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="grid gap-3 py-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="quick-client-nom">
+                            Nom <span className="text-destructive">*</span>
+                          </Label>
+                          <Input
+                            id="quick-client-nom"
+                            type="text"
+                            value={quickClientNom}
+                            onChange={(e) => setQuickClientNom(e.target.value)}
+                            placeholder="Nom du client"
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="quick-client-contact">Contact</Label>
+                          <Input
+                            id="quick-client-contact"
+                            type="text"
+                            value={quickClientContact}
+                            onChange={(e) => setQuickClientContact(e.target.value)}
+                            placeholder="Téléphone ou email"
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => { setQuickClientOpen(false); setQuickClientNom(""); setQuickClientContact(""); }}>
+                          Annuler
+                        </Button>
+                        <Button
+                          onClick={async () => {
+                            if (!quickClientNom.trim()) { toast.error("Le nom est requis"); return; }
+                            setQuickLoading(true);
+                            const { data, error } = await supabase.from("Tiers").insert({
+                              nom: quickClientNom.trim(),
+                              type: "Client",
+                              contact: quickClientContact.trim() || null,
+                            }).select("id, nom, contact").single();
+                            setQuickLoading(false);
+                            if (error) { toast.error(error.message); return; }
+                            if (data) {
+                              setClients((prev) => [...prev, data as Client].sort((a, b) => a.nom.localeCompare(b.nom)));
+                              setValue("client_id", data.id, { shouldValidate: true });
+                              toast.success(`Client « ${quickClientNom.trim()} » ajouté`);
+                            }
+                            setQuickClientOpen(false);
+                            setQuickClientNom("");
+                            setQuickClientContact("");
+                          }}
+                          disabled={quickLoading}
+                        >
+                          {quickLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Ajout...</> : "Ajouter"}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
                 {errors.client_id && (
                   <p className="text-sm text-destructive">
                     {errors.client_id.message}
