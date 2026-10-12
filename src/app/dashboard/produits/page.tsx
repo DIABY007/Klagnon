@@ -80,7 +80,7 @@ export default function ProduitsPage() {
 
   const loadData = useCallback(async () => {
     try {
-      const { data } = await supabase.from("Produits").select("*").order("nom");
+      const { data } = await supabase.from("produits").select("*").order("nom");
       if (data) setProduits(data as Produit[]);
     } catch (err) {
       console.error("Erreur chargement produits :", err);
@@ -95,7 +95,7 @@ export default function ProduitsPage() {
     if (!formNom.trim()) { toast.error("Le nom est requis"); return; }
     setSubmitting(true);
     try {
-      const { error } = await supabase.from("Produits").insert({
+      const { error } = await supabase.from("produits").insert({
         nom: formNom.trim(),
         description: formDesc.trim() || null,
         unite: formUnite,
@@ -113,7 +113,7 @@ export default function ProduitsPage() {
     if (!editTarget || !formNom.trim()) return;
     setSubmitting(true);
     try {
-      const { error } = await supabase.from("Produits").update({
+      const { error } = await supabase.from("produits").update({
         nom: formNom.trim(), description: formDesc.trim() || null,
         unite: formUnite,
         prix_achat_recommande: formPrixAchat ? parseFloat(formPrixAchat) : null,
@@ -130,7 +130,7 @@ export default function ProduitsPage() {
     if (!deleteTarget) return;
     setSubmitting(true);
     try {
-      const { error } = await supabase.from("Produits").delete().eq("id", deleteTarget.id);
+      const { error } = await supabase.from("produits").delete().eq("id", deleteTarget.id);
       if (error) { toast.error(`Erreur : ${error.message}`); return; }
       toast.success(`${deleteTarget.nom} supprimé`);
       setDeleteOpen(false); setDeleteTarget(null); await loadData();
