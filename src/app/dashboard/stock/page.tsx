@@ -67,6 +67,7 @@ interface MouvementStock {
   reference: string | null;
   notes: string | null;
   created_at: string;
+  produits: { nom: string } | null;
 }
 
 interface DashboardStats {
@@ -116,10 +117,10 @@ export default function GestionStocksPage() {
 
     try {
       const [stockRes, movementsRes] = await Promise.all([
-        supabase.from("stock_actuel").select("*").single<StockActuel>(),
+        supabase.from("stock_actuel").select("*, produits:produit_id(nom)").single<StockActuel>(),
         supabase
           .from("mouvements_stock")
-          .select("*")
+          .select("*, produits:produit_id(nom)")
           .order("date", { ascending: false })
           .order("created_at", { ascending: false }),
       ]);
@@ -422,6 +423,7 @@ export default function GestionStocksPage() {
                   <TableRow>
                     <TableHead>Date</TableHead>
                     <TableHead>Type</TableHead>
+                    <TableHead>Produit</TableHead>
                     <TableHead className="text-right">Quantité (t)</TableHead>
                     <TableHead>Cause / Référence</TableHead>
                     <TableHead>Notes</TableHead>
@@ -442,6 +444,9 @@ export default function GestionStocksPage() {
                       </TableCell>
                       <TableCell className="text-right font-medium tabular-nums">
                         {Number(mvt.quantite).toFixed(3)}
+                      </TableCell>
+                      <TableCell className="max-w-[200px] truncate">
+                        {mvt.produits?.nom ?? "—"}
                       </TableCell>
                       <TableCell className="max-w-[200px] truncate">
                         {mvt.cause_perte ?? mvt.reference ?? "—"}

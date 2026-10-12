@@ -51,9 +51,12 @@ interface Client {
   contact: string | null;
 }
 
+interface ProduitSelect { id: string; nom: string; }
+
 const venteSchema = z.object({
   date: z.string().min(1, "Date requise"),
   client_id: z.string().min(1, "Sélectionnez un client"),
+  produit_id: z.string().optional(),
   quantite: z.coerce
     .number({ invalid_type_error: "Quantité requise" })
     .positive("La quantité doit être supérieure à 0"),
@@ -68,6 +71,7 @@ type VenteFormData = z.infer<typeof venteSchema>;
 
 export default function NouvelleVentePage() {
   const [clients, setClients] = useState<Client[]>([]);
+  const [produitsVente, setProduitsVente] = useState<ProduitSelect[]>([]);
   const [stockDisponible, setStockDisponible] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -78,6 +82,8 @@ export default function NouvelleVentePage() {
   const [quickClientNom, setQuickClientNom] = useState("");
   const [quickClientContact, setQuickClientContact] = useState("");
   const [quickLoading, setQuickLoading] = useState(false);
+  const [quickVProdOpen, setQuickVProdOpen] = useState(false);
+  const [quickVProdNom, setQuickVProdNom] = useState("");
   const router = useRouter();
   const supabase = createClient();
 
@@ -100,19 +106,17 @@ export default function NouvelleVentePage() {
 
   async function loadInitialData() {
     try {
-      const [clientsRes, stockRes] = await Promise.all([
-        supabase
-          .from("tiers")
-          .select("id, nom, contact")
-          .eq("type", "Client")
-          .order("nom"),
+      const [clientsRes, stockRes, produitsRes] = await Promise.all([
+        supabase.from("tiers").select("id, nom, contact").eq("type", "Client").order("nom"),
         supabase.from("stock_actuel").select("stock_tonnes").single(),
+        supabase.from("produits").select("id, nom").eq("actif", true).order("nom"),
       ]);
 
       if (clientsRes.data) setClients(clientsRes.data);
       if (stockRes.data && "stock_tonnes" in stockRes.data) {
         setStockDisponible(Number(stockRes.data.stock_tonnes));
       }
+      if (produitsRes.data) setProduitsVente(produitsRes.data);
     } catch (err) {
       console.error("Erreur chargement données initiales :", err);
       toast.error("Erreur lors du chargement des données");
@@ -161,6 +165,7 @@ export default function NouvelleVentePage() {
           p_prix_unitaire: data.prix_unitaire,
           p_mode_encaissement: data.mode_encaissement,
           p_notes: data.notes || null,
+        p_produit_id: data.produit_id || null,
         }
       );
 
@@ -364,6 +369,45 @@ export default function NouvelleVentePage() {
                     {errors.client_id.message}
                   </p>
                 )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="vente-produit">Produit</Label>
+                <div className="flex gap-2">
+                  <Select onValueChange={(val: string | null) => val && setValue("produit_id", val, { shouldValidate: true })}>
+                    <SelectTrigger><SelectValue placeholder="Sélectionner un produit" /></SelectTrigger>
+                    <SelectContent>
+                      {produitsVente.map((p) => (<SelectItem key={p.id} value={p.id}>{p.nom}</SelectItem>))}
+                    </SelectContent>
+                  </Select>
+                  <Dialog open={quickVProdOpen} onOpenChange={(o) => { if (!o) { setQuickVProdOpen(false); setQuickVProdNom(""); } setQuickVProdOpen(o); }}>
+                    <DialogTrigger><Button variant="outline" size="icon" className="shrink-0" title="Ajouter un produit"><CirclePlus className="h-4 w-4" /></Button></DialogTrigger>
+                    <DialogContent className="sm:max-w-[400px]">
+                      <DialogHeader><DialogTitle>Nouveau produit</DialogTitle><DialogDescription>Ajouter rapidement un produit</DialogDescription></DialogHeader>
+                      <div className="grid gap-3 py-4">
+                        <div className="grid gap-2"><Label>Nom <span className="text-destructive">*</span></Label><Input value={quickVProdNom} onChange={(e) => setQuickVProdNom(e.target.value)} placeholder="Ex: Maïs, Riz..." /></div>
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => { setQuickVProdOpen(false); setQuickVProdNom(""); }}>Annuler</Button>
+                        <Button onClick={async () => {
+                          if (!quickVProdNom.trim()) { toast.error("Le nom est requis"); return; }
+                          setQuickLoading(true);
+                          const { data, error } = await supabase.from("produits").insert({ nom: quickVProdNom.trim(), unite: "Tonnes" }).select("id, nom").single();
+                          setQuickLoading(false);
+                          if (error) { toast.error(error.message); return; }
+                          if (data) {
+                            setProduitsVente((prev) => [...prev, data as ProduitSelect].sort((a, b) => a.nom.localeCompare(b.nom)));
+                            setValue("produit_id", data.id, { shouldValidate: true });
+                            toast.success(`Produit « ${quickVProdNom.trim()} » ajouté`);
+                          }
+                          setQuickVProdOpen(false); setQuickVProdNom("");
+                        }} disabled={quickLoading}>
+                          {quickLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Ajout...</> : "Ajouter"}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </div>
 
               {/* Quantité */}

@@ -44,6 +44,11 @@ interface Fournisseur {
   nom: string;
 }
 
+interface ProduitItem {
+  id: string;
+  nom: string;
+}
+
 interface FraisForm {
   type_frais: string;
   montant: number;
@@ -61,6 +66,7 @@ const fraisSchema = z.object({
 const achatSchema = z.object({
   date: z.string().min(1, "Date requise"),
   fournisseur_id: z.string().min(1, "Sélectionnez un fournisseur"),
+	  produit_id: z.string().optional(),
   quantite_tonnes: z.coerce
     .number({ invalid_type_error: "Quantité requise" })
     .positive("La quantité doit être supérieure à 0"),
@@ -83,6 +89,7 @@ const TYPES_FRAIS = [
 
 export default function NouvelAchatPage() {
   const [fournisseurs, setFournisseurs] = useState<Fournisseur[]>([]);
+  const [produits, setProduits] = useState<ProduitItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const router = useRouter();
@@ -93,6 +100,10 @@ export default function NouvelAchatPage() {
   const [quickNom, setQuickNom] = useState("");
   const [quickContact, setQuickContact] = useState("");
   const [quickLoading, setQuickLoading] = useState(false);
+
+  /* Quick-create produit */
+  const [quickProdOpen, setQuickProdOpen] = useState(false);
+  const [quickProdNom, setQuickProdNom] = useState("");
 
   const {
     register,
@@ -128,13 +139,12 @@ export default function NouvelAchatPage() {
   const cruEstime = quantite > 0 ? totalEstime / quantite : 0;
 
   async function loadFournisseurs() {
-    const { data } = await supabase
-      .from("tiers")
-      .select("id, nom")
-      .eq("type", "Fournisseur")
-      .order("nom");
-
-    if (data) setFournisseurs(data);
+    const [tiersRes, produitsRes] = await Promise.all([
+      supabase.from("tiers").select("id, nom").eq("type", "Fournisseur").order("nom"),
+      supabase.from("produits").select("id, nom").eq("actif", true).order("nom"),
+    ]);
+    if (tiersRes.data) setFournisseurs(tiersRes.data);
+    if (produitsRes.data) setProduits(produitsRes.data);
     setInitialLoading(false);
   }
 
@@ -153,6 +163,7 @@ export default function NouvelAchatPage() {
         p_prix_unitaire: data.prix_unitaire,
         p_mode_paiement: data.mode_paiement,
         p_notes: data.notes || null,
+        p_produit_id: data.produit_id || null,
         p_frais: (data.frais || []).map((f) => ({
           type_frais: f.type_frais,
           montant: Number(f.montant),
@@ -331,6 +342,61 @@ export default function NouvelAchatPage() {
                 {errors.fournisseur_id && (
                   <p className="text-sm text-destructive">{errors.fournisseur_id.message}</p>
                 )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="produit_id">Produit</Label>
+                <div className="flex gap-2">
+                  <Select
+                    onValueChange={(val: string | null) => val && setValue("produit_id", val, { shouldValidate: true })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner un produit" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {produits.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>{p.nom}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Dialog
+                    open={quickProdOpen}
+                    onOpenChange={(o) => { if (!o) { setQuickProdOpen(false); setQuickProdNom(""); } setQuickProdOpen(o); }}
+                  >
+                    <DialogTrigger>
+                      <Button variant="outline" size="icon" className="shrink-0" title="Ajouter un produit">
+                        <CirclePlus className="h-4 w-4" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[400px]">
+                      <DialogHeader><DialogTitle>Nouveau produit</DialogTitle><DialogDescription>Ajouter rapidement un produit</DialogDescription></DialogHeader>
+                      <div className="grid gap-3 py-4">
+                        <div className="grid gap-2">
+                          <Label>Nom <span className="text-destructive">*</span></Label>
+                          <Input value={quickProdNom} onChange={(e) => setQuickProdNom(e.target.value)} placeholder="Ex: Maïs, Riz..." />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => { setQuickProdOpen(false); setQuickProdNom(""); }}>Annuler</Button>
+                        <Button onClick={async () => {
+                          if (!quickProdNom.trim()) { toast.error("Le nom est requis"); return; }
+                          setQuickLoading(true);
+                          const { data, error } = await supabase.from("produits").insert({ nom: quickProdNom.trim(), unite: "Tonnes" }).select("id, nom").single();
+                          setQuickLoading(false);
+                          if (error) { toast.error(error.message); return; }
+                          if (data) {
+                            setProduits((prev) => [...prev, data as ProduitItem].sort((a, b) => a.nom.localeCompare(b.nom)));
+                            setValue("produit_id", data.id, { shouldValidate: true });
+                            toast.success(`Produit « ${quickProdNom.trim()} » ajouté`);
+                          }
+                          setQuickProdOpen(false); setQuickProdNom("");
+                        }} disabled={quickLoading}>
+                          {quickLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Ajout...</> : "Ajouter"}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </div>
 
               <div className="space-y-2">
