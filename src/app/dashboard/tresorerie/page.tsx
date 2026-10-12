@@ -36,7 +36,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import Link from "next/link";
 import {
+  ArrowLeft,
   Loader2,
   Wallet,
   Smartphone,
@@ -322,6 +324,10 @@ export default function TresoreriePage() {
 
   return (
     <div className="space-y-6">
+      <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
+        <ArrowLeft className="h-4 w-4" />
+        Tableau de bord
+      </Link>
       {/* En-tête */}
       <div>
         <h1 className="text-2xl font-bold font-heading text-foreground">

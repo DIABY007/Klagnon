@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2, Plus, ShoppingCart, PackageOpen } from "lucide-react";
+import { ArrowLeft, Loader2, Plus, ShoppingCart, PackageOpen } from "lucide-react";
 import Link from "next/link";
 
 interface AchatCRU {
@@ -57,6 +57,10 @@ export default function AchatsPage() {
 
   return (
     <div>
+      <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
+        <ArrowLeft className="h-4 w-4" />
+        Tableau de bord
+      </Link>
       {/* En-tête */}
       <div className="flex items-center justify-between mb-8">
         <div>
