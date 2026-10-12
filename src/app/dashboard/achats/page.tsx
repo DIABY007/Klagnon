@@ -20,6 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ArrowLeft, Loader2, Plus, ShoppingCart, PackageOpen } from "lucide-react";
+import { toast } from "sonner";
 import Link from "next/link";
 
 interface AchatCRU {
@@ -50,6 +51,7 @@ export default function AchatsPage() {
       .order("date", { ascending: false });
 
     if (data) setAchats(data as AchatCRU[]);
+    else toast.error("Erreur lors du chargement des achats");
     setLoading(false);
   }
 
