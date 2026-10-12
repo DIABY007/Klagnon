@@ -55,7 +55,7 @@ import { toast } from "sonner";
 /* ------------------------------------------------------------------ */
 
 interface StockActuel {
-  stock_actuel: number | null;
+  stock_tonnes: number | null;
 }
 
 interface MouvementStock {
@@ -63,14 +63,14 @@ interface MouvementStock {
   date: string;
   type: string;
   quantite: number;
-  cause: string | null;
+  cause_perte: string | null;
   reference: string | null;
   notes: string | null;
   created_at: string;
 }
 
 interface DashboardStats {
-  stock_actuel: number;
+  stock_tonnes: number;
   entrees: number;
   sorties: number;
   pertes: number;
@@ -88,7 +88,7 @@ export default function GestionStocksPage() {
 
   const [movements, setMovements] = useState<MouvementStock[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
-    stock_actuel: 0,
+    stock_tonnes: 0,
     entrees: 0,
     sorties: 0,
     pertes: 0,
@@ -147,7 +147,7 @@ export default function GestionStocksPage() {
         .reduce((sum, m) => sum + Number(m.quantite), 0);
 
       setStats({
-        stock_actuel: stockRes.data?.stock_actuel ?? 0,
+        stock_tonnes: stockRes.data?.stock_tonnes ?? 0,
         entrees,
         sorties,
         pertes,
@@ -184,7 +184,7 @@ export default function GestionStocksPage() {
         date: perteDate,
         type: "Perte",
         quantite,
-        cause: perteCause,
+        cause_perte: perteCause,
         notes: perteNotes || null,
       });
 
@@ -350,7 +350,7 @@ export default function GestionStocksPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-emerald-600">
-              {stats.stock_actuel.toFixed(3)} t
+              {stats.stock_tonnes.toFixed(3)} t
             </div>
             <CardDescription>Tonnes en stock</CardDescription>
           </CardContent>
@@ -444,7 +444,7 @@ export default function GestionStocksPage() {
                         {Number(mvt.quantite).toFixed(3)}
                       </TableCell>
                       <TableCell className="max-w-[200px] truncate">
-                        {mvt.cause ?? mvt.reference ?? "—"}
+                        {mvt.cause_perte ?? mvt.reference ?? "—"}
                       </TableCell>
                       <TableCell className="max-w-[200px] truncate text-muted-foreground">
                         {mvt.notes ?? "—"}
