@@ -3,6 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { FileDown, Loader2 } from "lucide-react";
 import { useState } from "react";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 // Types
 interface VenteData {
@@ -36,10 +38,6 @@ export default function FactureButton({
     setGenerating(true);
 
     try {
-      // Import dynamique de jspdf (permet le code-splitting)
-      const jsPDF = (await import("jspdf")).default;
-      await import("jspdf-autotable");
-
       const doc = new jsPDF({ unit: "mm", format: "a4" });
 
       // Couleurs Klagnon
