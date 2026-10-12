@@ -101,7 +101,7 @@ export default function NouvelleVentePage() {
     try {
       const [clientsRes, stockRes] = await Promise.all([
         supabase
-          .from("Tiers")
+          .from("tiers")
           .select("id, nom, contact")
           .eq("type", "Client")
           .order("nom"),
@@ -334,7 +334,7 @@ export default function NouvelleVentePage() {
                           onClick={async () => {
                             if (!quickClientNom.trim()) { toast.error("Le nom est requis"); return; }
                             setQuickLoading(true);
-                            const { data, error } = await supabase.from("Tiers").insert({
+                            const { data, error } = await supabase.from("tiers").insert({
                               nom: quickClientNom.trim(),
                               type: "Client",
                               contact: quickClientContact.trim() || null,

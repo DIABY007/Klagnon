@@ -86,7 +86,7 @@ export default function PartenairesPage() {
   const loadData = useCallback(async () => {
     try {
       const { data } = await supabase
-        .from("Tiers")
+        .from("tiers")
         .select("*")
         .order("nom");
 
@@ -115,7 +115,7 @@ export default function PartenairesPage() {
 
     setSubmitting(true);
     try {
-      const { error } = await supabase.from("Tiers").insert({
+      const { error } = await supabase.from("tiers").insert({
         nom: formNom.trim(),
         type: formType,
         contact: formContact.trim() || null,
@@ -144,7 +144,7 @@ export default function PartenairesPage() {
     setSubmitting(true);
     try {
       const { error } = await supabase
-        .from("Tiers")
+        .from("tiers")
         .update({
           nom: formNom.trim(),
           contact: formContact.trim() || null,
@@ -175,7 +175,7 @@ export default function PartenairesPage() {
     setSubmitting(true);
     try {
       const { error } = await supabase
-        .from("Tiers")
+        .from("tiers")
         .delete()
         .eq("id", deleteTarget.id);
 

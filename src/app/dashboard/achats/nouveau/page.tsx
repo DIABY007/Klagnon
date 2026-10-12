@@ -128,7 +128,7 @@ export default function NouvelAchatPage() {
 
   async function loadFournisseurs() {
     const { data } = await supabase
-      .from("Tiers")
+      .from("tiers")
       .select("id, nom")
       .eq("type", "Fournisseur")
       .order("nom");
@@ -303,7 +303,7 @@ export default function NouvelAchatPage() {
                           onClick={async () => {
                             if (!quickNom.trim()) { toast.error("Le nom est requis"); return; }
                             setQuickLoading(true);
-                            const { data, error } = await supabase.from("Tiers").insert({
+                            const { data, error } = await supabase.from("tiers").insert({
                               nom: quickNom.trim(),
                               type: "Fournisseur",
                               contact: quickContact.trim() || null,
