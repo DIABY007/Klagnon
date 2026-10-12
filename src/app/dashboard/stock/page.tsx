@@ -117,7 +117,7 @@ export default function GestionStocksPage() {
       const [stockRes, movementsRes] = await Promise.all([
         supabase.from("stock_actuel").select("*").single<StockActuel>(),
         supabase
-          .from("Mouvements_Stock")
+          .from("mouvements_stock")
           .select("*")
           .order("date", { ascending: false })
           .order("created_at", { ascending: false }),
@@ -179,7 +179,7 @@ export default function GestionStocksPage() {
         return;
       }
 
-      const { error } = await supabase.from("Mouvements_Stock").insert({
+      const { error } = await supabase.from("mouvements_stock").insert({
         date: perteDate,
         type: "Perte",
         quantite,
