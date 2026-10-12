@@ -34,6 +34,7 @@ interface AchatCRU {
   cru_unitaire: number;
   mode_paiement: string;
   statut_paiement: string;
+  produit_nom: string;
 }
 
 export default function AchatsPage() {
@@ -123,6 +124,7 @@ export default function AchatsPage() {
                   <TableRow>
                     <TableHead>Date</TableHead>
                     <TableHead>Fournisseur</TableHead>
+                    <TableHead>Produit</TableHead>
                     <TableHead className="text-right">Qté (T)</TableHead>
                     <TableHead className="text-right">Prix unit.</TableHead>
                     <TableHead className="text-right">Montant</TableHead>
@@ -141,6 +143,7 @@ export default function AchatsPage() {
                         {new Date(a.date).toLocaleDateString("fr-FR")}
                       </TableCell>
                       <TableCell>{a.fournisseur}</TableCell>
+                      <TableCell>{a.produit_nom ?? "—"}</TableCell>
                       <TableCell className="text-right tabular-nums">
                         {Number(a.quantite_tonnes).toFixed(3)}
                       </TableCell>

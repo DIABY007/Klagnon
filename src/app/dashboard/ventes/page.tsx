@@ -40,6 +40,7 @@ interface VenteRow {
   statut_paiement: string;
   notes: string | null;
   tiers: { nom: string; contact: string | null } | null;
+  produits: { nom: string } | null;
 }
 
 interface VenteDisplay {
@@ -53,6 +54,7 @@ interface VenteDisplay {
   mode_encaissement: string;
   statut_paiement: string;
   notes: string | null;
+  produit_nom: string;
 }
 
 export default function VentesPage() {
@@ -69,7 +71,7 @@ export default function VentesPage() {
       const [ventesRes, stockRes] = await Promise.allSettled([
         supabase
           .from("ventes")
-          .select("*, tiers:client_id(nom, contact)")
+          .select("*, tiers:client_id(nom, contact), produits:produit_id(nom)")
           .order("date", { ascending: false }),
         supabase.from("stock_actuel").select("stock_tonnes").single(),
       ]);
@@ -87,6 +89,7 @@ export default function VentesPage() {
           mode_encaissement: v.mode_encaissement,
           statut_paiement: v.statut_paiement,
           notes: v.notes,
+          produit_nom: v.produits?.nom ?? "—",
         }));
         setVentes(display);
       }
@@ -236,6 +239,7 @@ export default function VentesPage() {
                     <TableRow>
                       <TableHead>Date</TableHead>
                       <TableHead>Client</TableHead>
+                      <TableHead>Produit</TableHead>
                       <TableHead className="text-right">Qté (T)</TableHead>
                       <TableHead className="text-right">Prix unit.</TableHead>
                       <TableHead className="text-right">Montant</TableHead>
@@ -251,6 +255,7 @@ export default function VentesPage() {
                           {new Date(v.date).toLocaleDateString("fr-FR")}
                         </TableCell>
                         <TableCell>{v.client_nom}</TableCell>
+                        <TableCell>{v.produit_nom}</TableCell>
                         <TableCell className="text-right tabular-nums">
                           {v.quantite.toFixed(3)}
                         </TableCell>

@@ -2,7 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { LogOut, Sprout, Package, ShoppingCart, TrendingUp, Wallet, Users } from "lucide-react";
+import { LogOut, Sprout, Package, ShoppingCart, TrendingUp, Wallet, Users, Box } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -66,6 +66,14 @@ export default async function DashboardPage() {
       href: "/dashboard/partenaires",
       color: "text-accent-foreground",
       bgColor: "bg-accent/10",
+    },
+    {
+      title: "Produits",
+      description: "Catalogue de produits agricoles",
+      icon: Box,
+      href: "/dashboard/produits",
+      color: "text-primary",
+      bgColor: "bg-primary/10",
     },
   ];
 

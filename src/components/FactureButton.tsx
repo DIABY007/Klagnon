@@ -14,6 +14,7 @@ function formatFCFA(n: number): string {
 
 // Types
 interface VenteData {
+  produit_nom: string;
   id: string;
   date: string;
   client_nom: string;
@@ -171,7 +172,7 @@ export default function FactureButton({
         ],
         body: [
           {
-            designation: "Produit agricole",
+            designation: vente.produit_nom,
             quantite: Number(vente.quantite).toFixed(3),
             prixUnitaire: formatFCFA(Number(vente.prix_unitaire)),
             total: formatFCFA(Number(vente.montant_total)),
