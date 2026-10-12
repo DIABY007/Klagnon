@@ -8,6 +8,10 @@ import { applyPlugin } from "jspdf-autotable";
 
 applyPlugin(jsPDF);
 
+function formatFCFA(n: number): string {
+  return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
 // Types
 interface VenteData {
   id: string;
@@ -169,8 +173,8 @@ export default function FactureButton({
           {
             designation: "Produit agricole",
             quantite: Number(vente.quantite).toFixed(3),
-            prixUnitaire: Number(vente.prix_unitaire).toLocaleString("fr-FR"),
-            total: Number(vente.montant_total).toLocaleString("fr-FR"),
+            prixUnitaire: formatFCFA(Number(vente.prix_unitaire)),
+            total: formatFCFA(Number(vente.montant_total)),
           },
         ],
         foot: [
@@ -186,7 +190,7 @@ export default function FactureButton({
               },
             },
             {
-              content: `${Number(vente.montant_total).toLocaleString("fr-FR")} FCFA`,
+              content: formatFCFA(Number(vente.montant_total)),
               styles: {
                 halign: "right",
                 fontStyle: "bold",
