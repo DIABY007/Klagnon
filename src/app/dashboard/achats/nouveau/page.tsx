@@ -176,7 +176,7 @@ export default function NouvelAchatPage() {
         return;
       }
 
-      toast.success("Achat enregistré avec succès !");
+      toast.success("Dépense enregistrée avec succès !");
       router.push("/dashboard/achats");
       router.refresh();
     } catch {
@@ -206,10 +206,10 @@ export default function NouvelAchatPage() {
         </Link>
         <div>
           <h1 className="text-2xl font-bold font-heading text-foreground">
-            Nouvel Achat
+            Nouvelle Dépense
           </h1>
           <p className="text-muted-foreground text-sm">
-            Enregistrer un nouvel achat avec ses frais annexes
+            Enregistrer une nouvelle dépense avec ses frais annexes
           </p>
         </div>
       </div>
@@ -220,10 +220,10 @@ export default function NouvelAchatPage() {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <Sprout className="h-5 w-5 text-primary" />
-              Détails de l&apos;achat
+              Détails de la dépense
             </CardTitle>
             <CardDescription>
-              Informations générales sur l&apos;achat
+              Informations générales sur la dépense
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -558,7 +558,7 @@ export default function NouvelAchatPage() {
             <CardContent>
               <div className="grid gap-3 sm:grid-cols-4 text-sm">
                 <div>
-                  <span className="text-muted-foreground">Montant achat</span>
+                  <span className="text-muted-foreground">Sous-total</span>
                   <p className="text-lg font-semibold">
                     {totalAchat.toLocaleString("fr-FR")} FCFA
                   </p>
@@ -601,7 +601,7 @@ export default function NouvelAchatPage() {
                 Enregistrement...
               </>
             ) : (
-              "Enregistrer l'achat"
+              "Enregistrer la dépense"
             )}
           </Button>
         </div>

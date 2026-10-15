@@ -178,7 +178,7 @@ export default function NouvelleVentePage() {
         return;
       }
 
-      toast.success("Vente enregistrée avec succès !");
+      toast.success("Revenu enregistré avec succès !");
       router.push("/dashboard/ventes");
       router.refresh();
     } catch {
@@ -208,10 +208,10 @@ export default function NouvelleVentePage() {
         </Link>
         <div>
           <h1 className="text-2xl font-bold font-heading text-foreground">
-            Nouvelle Vente
+            Nouveau Revenu
           </h1>
           <p className="text-muted-foreground text-sm">
-            Enregistrer une vente et mettre à jour le stock
+            Enregistrer un revenu et mettre à jour le stock
           </p>
         </div>
       </div>
@@ -237,10 +237,10 @@ export default function NouvelleVentePage() {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-primary" />
-              Détails de la vente
+              Détails du revenu
             </CardTitle>
             <CardDescription>
-              Informations sur la transaction de vente
+              Informations sur la transaction
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -517,7 +517,7 @@ export default function NouvelleVentePage() {
         {montantTotal > 0 && (
           <Card className="bg-primary/5 border-primary/20">
             <CardHeader>
-              <CardTitle className="text-lg">Résumé de la vente</CardTitle>
+              <CardTitle className="text-lg">Résumé du revenu</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid gap-3 sm:grid-cols-3 text-sm">
@@ -563,7 +563,7 @@ export default function NouvelleVentePage() {
                 Enregistrement...
               </>
             ) : (
-              "Enregistrer la vente"
+              "Enregistrer le revenu"
             )}
           </Button>
         </div>

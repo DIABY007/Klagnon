@@ -19,7 +19,7 @@ const firaCode = Fira_Code({
 export const metadata: Metadata = {
   title: "Klagnon — Gestion Financière",
   description:
-    "Application de gestion financière pour l'achat et la revente de produits agricoles",
+    "Application de gestion financière pour les dépenses et les revenus de produits agricoles",
   manifest: "/manifest.json",
   icons: {
     icon: [

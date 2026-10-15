@@ -131,16 +131,16 @@ export default function VentesPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold font-heading text-foreground">
-            Ventes
+            Revenus
           </h1>
           <p className="text-muted-foreground text-sm">
-            Gérer les ventes et télécharger les factures
+            Gérer les revenus et télécharger les factures
           </p>
         </div>
         <Link href="/dashboard/ventes/nouveau">
           <Button>
             <Plus className="h-4 w-4 mr-2" />
-            Nouvelle vente
+            Nouveau revenu
           </Button>
         </Link>
       </div>
@@ -156,15 +156,15 @@ export default function VentesPage() {
               <TrendingUp className="h-8 w-8 text-primary" />
             </div>
             <h3 className="text-lg font-semibold mb-1">
-              Aucune vente enregistrée
+              Aucun revenu enregistré
             </h3>
             <p className="text-muted-foreground text-sm mb-6">
-              Commencez par enregistrer votre première vente
+              Commencez par enregistrer votre premier revenu
             </p>
             <Link href="/dashboard/ventes/nouveau">
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
-                Nouvelle vente
+                Nouveau revenu
               </Button>
             </Link>
           </CardContent>
@@ -184,7 +184,7 @@ export default function VentesPage() {
                 <div className="text-2xl font-bold text-emerald-600">
                   {stockActuel.toFixed(3)} t
                 </div>
-                <CardDescription>Disponible pour la vente</CardDescription>
+                <CardDescription>Disponible pour le revenu</CardDescription>
               </CardContent>
             </Card>
 
@@ -200,7 +200,7 @@ export default function VentesPage() {
                   {totalQuantite.toFixed(3)} t
                 </div>
                 <CardDescription>
-                  {ventes.length} vente{ventes.length > 1 ? "s" : ""}
+                  {ventes.length} revenu{ventes.length > 1 ? "s" : ""}
                 </CardDescription>
               </CardContent>
             </Card>
@@ -226,10 +226,10 @@ export default function VentesPage() {
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-primary" />
-                Historique des ventes
+                Historique des revenus
               </CardTitle>
               <CardDescription>
-                Liste de toutes les ventes enregistrées
+                Liste de tous les revenus enregistrés
               </CardDescription>
             </CardHeader>
             <CardContent className="p-0">

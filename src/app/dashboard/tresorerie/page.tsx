@@ -261,7 +261,7 @@ export default function TresoreriePage() {
         montant,
         reference_id: selectedCreance.id,
         reference_type: "Paiement",
-        description: `Paiement vente #${selectedCreance.id.slice(0, 6)}`,
+        description: `Paiement revenu #${selectedCreance.id.slice(0, 6)}`,
       });
 
       if (caisseError) {
@@ -283,7 +283,7 @@ export default function TresoreriePage() {
           `Paiement de ${montant.toLocaleString("fr-FR")} FCFA enregistré (caisse)`
         );
         toast.warning(
-          "Le statut de la vente n'a pas pu être mis à jour — " +
+          "Le statut du revenu n'a pas pu être mis à jour — " +
           "un Admin doit le confirmer ou exécuter la migration SQL (étape 6)."
         );
         setDialogOpen(false);
@@ -552,7 +552,7 @@ export default function TresoreriePage() {
                               {m.reference_type ? (
                                 <span className="inline-flex items-center gap-1">
                                   <span className="text-xs text-muted-foreground">
-                                    {m.reference_type}
+                                    {libelleReference(m.reference_type)}
                                   </span>
                                   {m.reference_id && (
                                     <span className="text-xs font-mono text-muted-foreground">
@@ -586,7 +586,7 @@ export default function TresoreriePage() {
                   <CardContent className="py-4">
                     <p className="text-xs text-muted-foreground mb-1">Créances en cours</p>
                     <p className="text-2xl font-bold text-foreground">
-                      {creances.length} vente{creances.length > 1 ? "s" : ""}
+                      {creances.length} revenu{creances.length > 1 ? "s" : ""}
                     </p>
                   </CardContent>
                 </Card>
@@ -618,7 +618,7 @@ export default function TresoreriePage() {
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <HandCoins className="h-12 w-12 text-muted-foreground/40 mb-3" />
                   <p className="text-sm text-muted-foreground">
-                    Aucune créance en cours — toutes les ventes sont soldées
+                    Aucune créance en cours — tous les revenus sont soldés
                   </p>
                 </div>
               ) : (
@@ -804,4 +804,11 @@ export default function TresoreriePage() {
       </Card>
     </div>
   );
+}
+
+// Affiche le vocabulaire de l'UI (la base conserve 'Achat'/'Vente')
+function libelleReference(referenceType: string): string {
+  if (referenceType === "Vente") return "Revenu";
+  if (referenceType === "Achat") return "Dépense";
+  return referenceType;
 }

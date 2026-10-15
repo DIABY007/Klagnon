@@ -28,8 +28,8 @@ export default async function DashboardPage() {
 
   const modules = [
     {
-      title: "Achats",
-      description: "Gérer les achats et les frais annexes",
+      title: "Dépenses",
+      description: "Gérer les dépenses et les frais annexes",
       icon: ShoppingCart,
       href: "/dashboard/achats",
       color: "text-primary",
@@ -44,8 +44,8 @@ export default async function DashboardPage() {
       bgColor: "bg-secondary/20",
     },
     {
-      title: "Ventes",
-      description: "Gérer les ventes et les factures",
+      title: "Revenus",
+      description: "Gérer les revenus et les factures",
       icon: TrendingUp,
       href: "/dashboard/ventes",
       color: "text-accent-foreground",

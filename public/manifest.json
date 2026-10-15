@@ -1,7 +1,7 @@
 {
   "name": "Klagnon — Gestion Financière Agricole",
   "short_name": "Klagnon",
-  "description": "Application de gestion financière pour l'achat et la revente de produits agricoles",
+  "description": "Application de gestion financière pour les dépenses et les revenus de produits agricoles",
   "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",

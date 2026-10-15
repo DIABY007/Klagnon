@@ -51,7 +51,7 @@ export default function AchatsPage() {
       .order("date", { ascending: false });
 
     if (data) setAchats(data as AchatCRU[]);
-    else toast.error("Erreur lors du chargement des achats");
+    else toast.error("Erreur lors du chargement des dépenses");
     setLoading(false);
   }
 
@@ -69,16 +69,16 @@ export default function AchatsPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold font-heading text-foreground">
-            Achats
+            Dépenses
           </h1>
           <p className="text-muted-foreground text-sm">
-            Historique des achats et coût de revient unitaire
+            Historique des dépenses et coût de revient unitaire
           </p>
         </div>
         <Link href="/dashboard/achats/nouveau">
           <Button>
             <Plus className="h-4 w-4 mr-2" />
-            Nouvel achat
+            Nouvelle dépense
           </Button>
         </Link>
       </div>
@@ -94,15 +94,15 @@ export default function AchatsPage() {
               <PackageOpen className="h-8 w-8 text-primary" />
             </div>
             <h3 className="text-lg font-semibold mb-1">
-              Aucun achat enregistré
+              Aucune dépense enregistrée
             </h3>
             <p className="text-muted-foreground text-sm mb-6">
-              Commencez par enregistrer votre premier achat
+              Commencez par enregistrer votre première dépense
             </p>
             <Link href="/dashboard/achats/nouveau">
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
-                Nouvel achat
+                Nouvelle dépense
               </Button>
             </Link>
           </CardContent>
@@ -112,10 +112,10 @@ export default function AchatsPage() {
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
               <ShoppingCart className="h-5 w-5 text-primary" />
-              Historique des achats
+              Historique des dépenses
             </CardTitle>
             <CardDescription>
-              {achats.length} achat{achats.length > 1 ? "s" : ""} enregistré
+              {achats.length} dépense{achats.length > 1 ? "s" : ""} enregistrée
               {achats.length > 1 ? "s" : ""}
             </CardDescription>
           </CardHeader>
